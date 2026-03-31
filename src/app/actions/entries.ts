@@ -86,12 +86,15 @@ export async function deleteEntry(id: string) {
   return { success: true }
 }
 
-export async function uploadPhoto(file: File): Promise<string | null> {
+export async function uploadPhoto(formData: FormData): Promise<string | null> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  const ext = file.name.split('.').pop()
+  const file = formData.get('file') as File
+  if (!file) return null
+
+  const ext = file.name.split('.').pop() || 'jpg'
   const filename = `${user.id}/${Date.now()}.${ext}`
 
   const { data, error } = await supabase.storage

@@ -3,7 +3,7 @@
 import { useState, useRef, useTransition, useEffect } from 'react'
 import { toast } from 'sonner'
 import { X, Scale, Flame, Footprints, Dumbbell, Camera, FileText, Loader2, Calendar, Trash2, ImagePlus } from 'lucide-react'
-import { upsertEntry, deleteEntry } from '@/app/actions/entries'
+import { upsertEntry, deleteEntry, uploadPhoto } from '@/app/actions/entries'
 import type { Entry, WorkoutType } from '@/lib/types'
 
 const WORKOUT_OPTIONS: { value: WorkoutType; label: string; emoji: string }[] = [
@@ -62,8 +62,9 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
         let photo_url = existing?.photo_url ?? null
 
         if (photoFile) {
-          const { uploadPhoto } = await import('@/app/actions/entries')
-          photo_url = await uploadPhoto(photoFile)
+          const formData = new FormData()
+          formData.append('file', photoFile)
+          photo_url = await uploadPhoto(formData)
         }
 
         const result = await upsertEntry({
