@@ -54,10 +54,16 @@ export default function ProgramModal({ onClose, programs, activeProgram }: Progr
   const finalName = customName.trim() || selectedPreset
 
   function handleCreate() {
-    if (!finalName) return toast.error('Donne un nom à ton programme')
+    if (!finalName) {
+      toast.error('Donne un nom à ton programme')
+      return
+    }
     startTransition(async () => {
       const result = await createProgram(finalName, startDate)
-      if (result?.error) return toast.error(result.error)
+      if (result?.error) {
+        toast.error(result.error)
+        return
+      }
       toast.success(`Programme "${finalName}" démarré 🚀`)
       onClose()
     })
@@ -67,7 +73,10 @@ export default function ProgramModal({ onClose, programs, activeProgram }: Progr
     setActionId(id)
     startTransition(async () => {
       const result = await setActiveProgram(id)
-      if (result?.error) return toast.error(result.error)
+      if (result?.error) {
+        toast.error(result.error)
+        return
+      }
       toast.success(`"${name}" est maintenant actif ✅`)
       onClose()
     })
@@ -77,7 +86,10 @@ export default function ProgramModal({ onClose, programs, activeProgram }: Progr
     setActionId(id)
     startTransition(async () => {
       const result = await endProgram(id)
-      if (result?.error) return toast.error(result.error)
+      if (result?.error) {
+        toast.error(result.error)
+        return
+      }
       toast.success(`Programme "${name}" terminé`)
       onClose()
     })
@@ -87,7 +99,10 @@ export default function ProgramModal({ onClose, programs, activeProgram }: Progr
     setActionId(id)
     startTransition(async () => {
       const result = await deleteProgram(id)
-      if (result?.error) return toast.error(result.error)
+      if (result?.error) {
+        toast.error(result.error)
+        return
+      }
       toast.success('Programme supprimé')
       onClose()
     })
