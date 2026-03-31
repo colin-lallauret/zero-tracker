@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import { Toaster } from 'sonner'
+import PwaRegister from '@/components/PwaRegister'
 import './globals.css'
 
 const geist = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={geist.variable}>
       <body>
+        <PwaRegister />
         {children}
         <Toaster
           theme="dark"
