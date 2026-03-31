@@ -122,6 +122,13 @@ export async function deleteProgram(programId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Non authentifié' }
 
+  // GATHER ALL PHOTOS TO PREVENT CLOUD ORPHANS (since DB cascades delete entries)
+  const { data: entries } = await supabase
+    .from('entries')
+    .select('photo_url')
+    .eq('program_id', programId)
+    .eq('user_id', user.id)
+
   const { error } = await supabase
     .from('programs')
     .delete()
@@ -129,6 +136,17 @@ export async function deleteProgram(programId: string) {
     .eq('user_id', user.id)
 
   if (error) return { error: error.message }
+
+  // DELETE ORPHAN PHOTOS
+  if (entries && entries.length > 0) {
+    const pathsToRemove = entries
+      .map(e => e.photo_url?.match(/\/progress-photos\/(.+)$/)?.[1])
+      .filter(Boolean) as string[]
+
+    if (pathsToRemove.length > 0) {
+      await supabase.storage.from('progress-photos').remove(pathsToRemove)
+    }
+  }
 
   revalidatePath('/')
   revalidatePath('/history')

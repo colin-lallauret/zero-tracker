@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/server'
 import WeightChart from '@/components/WeightChart'
 import Fab from '@/components/Fab'
 import ProgramBanner from '@/components/ProgramBanner'
-import { Scale, Flame, Footprints, TrendingDown, TrendingUp, LogOut } from 'lucide-react'
+import BlurredImage from '@/components/BlurredImage'
+import { Scale, Flame, Footprints, TrendingDown, TrendingUp, LogOut, Zap } from 'lucide-react'
 import type { Entry } from '@/lib/types'
 
 const WORKOUT_BADGE_CLASS: Record<string, string> = {
@@ -52,6 +53,11 @@ export default async function DashboardPage() {
 
   const today = new Date().toISOString().split('T')[0]
   const isToday = todayEntry?.date === today
+
+  // eslint-disable-next-line react-hooks/purity
+  const nowMs = Date.now()
+  const phaseDay = activeProgram ? Math.max(1, Math.floor((nowMs - new Date(activeProgram.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1) : null
+
 
   return (
     <main className="page-container">
@@ -127,9 +133,8 @@ export default async function DashboardPage() {
         )}
 
         {todayEntry?.photo_url && (
-          <div style={{ marginTop: '0.75rem', borderRadius: 'var(--radius-sm)', overflow: 'hidden', aspectRatio: '16/7' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={todayEntry.photo_url} alt="Photo du jour" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ marginTop: '0.75rem', borderRadius: 'var(--radius-sm)', overflow: 'hidden', aspectRatio: '3/4', backgroundColor: 'var(--bg-card)' }}>
+            <BlurredImage src={todayEntry.photo_url} alt="Photo du jour" />
           </div>
         )}
       </div>
@@ -137,9 +142,16 @@ export default async function DashboardPage() {
       {/* Stats de la phase */}
       <div className="card animate-in" style={{ marginBottom: '1rem', animationDelay: '0.05s' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ fontWeight: 700, fontSize: '0.95rem' }}>
-            {activeProgram ? activeProgram.name : 'Ma progression'}
-          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <h2 style={{ fontWeight: 700, fontSize: '0.95rem' }}>
+              {activeProgram ? activeProgram.name : 'Ma progression'}
+            </h2>
+            {activeProgram && phaseDay !== null && (
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                🔥 Jour {phaseDay}
+              </span>
+            )}
+          </div>
           {phaseDelta !== null && (
             <span
               className="badge"

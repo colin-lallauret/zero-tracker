@@ -42,6 +42,21 @@ export async function upsertEntry(entry: Partial<EntryInsert> & { date: string }
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  // CLEANUP ORPHAN UPON UPDATE
+  const { data: oldEntry } = await supabase
+    .from('entries')
+    .select('photo_url')
+    .eq('user_id', user.id)
+    .eq('date', entry.date)
+    .single()
+
+  if (oldEntry?.photo_url && oldEntry.photo_url !== entry.photo_url) {
+    const pathMatch = oldEntry.photo_url.match(/\/progress-photos\/(.+)$/)
+    if (pathMatch && pathMatch[1]) {
+      await supabase.storage.from('progress-photos').remove([pathMatch[1]])
+    }
+  }
+
   // Auto-assign active program if no program_id provided
   let program_id = entry.program_id ?? null
   if (!program_id) {
@@ -73,6 +88,14 @@ export async function deleteEntry(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  // CHECK IF IT HAS A PHOTO BEFORE DELETING
+  const { data: entry } = await supabase
+    .from('entries')
+    .select('photo_url')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single()
+
   const { error } = await supabase
     .from('entries')
     .delete()
@@ -80,6 +103,14 @@ export async function deleteEntry(id: string) {
     .eq('user_id', user.id)
 
   if (error) return { error: error.message }
+
+  // DELETE ORPHAN PHOTO FROM CLOUD
+  if (entry?.photo_url) {
+    const pathMatch = entry.photo_url.match(/\/progress-photos\/(.+)$/)
+    if (pathMatch && pathMatch[1]) {
+      await supabase.storage.from('progress-photos').remove([pathMatch[1]])
+    }
+  }
 
   revalidatePath('/')
   revalidatePath('/history')
