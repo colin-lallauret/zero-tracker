@@ -42,10 +42,22 @@ export async function upsertEntry(entry: Partial<EntryInsert> & { date: string }
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  // Auto-assign active program if no program_id provided
+  let program_id = entry.program_id ?? null
+  if (!program_id) {
+    const { data: activeProgram } = await supabase
+      .from('programs')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .single()
+    program_id = activeProgram?.id ?? null
+  }
+
   const { error } = await supabase
     .from('entries')
     .upsert(
-      { ...entry, user_id: user.id },
+      { ...entry, program_id, user_id: user.id },
       { onConflict: 'user_id,date' }
     )
 

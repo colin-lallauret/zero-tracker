@@ -1,8 +1,10 @@
 import { getEntries, getTodayEntry } from '@/app/actions/entries'
 import { logout } from '@/app/actions/auth'
+import { getPrograms, getActiveProgram } from '@/app/actions/programs'
 import { createClient } from '@/lib/supabase/server'
 import WeightChart from '@/components/WeightChart'
 import Fab from '@/components/Fab'
+import ProgramBanner from '@/components/ProgramBanner'
 import { Scale, Flame, Footprints, TrendingDown, TrendingUp, Minus, LogOut } from 'lucide-react'
 import type { Entry } from '@/lib/types'
 
@@ -29,21 +31,27 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [entries, todayEntry] = await Promise.all([
+  const [entries, todayEntry, activeProgram, programs] = await Promise.all([
     getEntries(30),
     getTodayEntry(),
+    getActiveProgram(),
+    getPrograms(),
   ])
 
-  const last7 = entries.slice(0, 7)
-  const avgWeight = avg(last7, 'weight')
-  const avgCal = avg(last7, 'calories')
-  const avgSteps = avg(last7, 'steps')
-
-  // Weight trend vs previous week
-  const prev7 = entries.slice(7, 14)
-  const prevAvgWeight = avg(prev7, 'weight')
-  const weightDelta = avgWeight !== null && prevAvgWeight !== null
-    ? parseFloat((avgWeight - prevAvgWeight).toFixed(1))
+  // Phase stats : entrées du programme actif, tri croissant
+  const programEntries = activeProgram
+    ? [...entries].filter(e => e.program_id === activeProgram.id)
+    : []
+  // entries est déjà trié desc (plus récent en premier)
+  const programWeights = programEntries.filter(e => e.weight !== null)
+  const startWeight = programWeights.length > 0
+    ? programWeights[programWeights.length - 1].weight! // la plus ancienne
+    : null
+  const currentWeight = programWeights.length > 0
+    ? programWeights[0].weight! // la plus récente
+    : (todayEntry?.weight ?? null)
+  const phaseDelta = startWeight !== null && currentWeight !== null && startWeight !== currentWeight
+    ? parseFloat((currentWeight - startWeight).toFixed(1))
     : null
 
   const today = new Date().toISOString().split('T')[0]
@@ -52,7 +60,7 @@ export default async function DashboardPage() {
   return (
     <main className="page-container">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', paddingTop: '0.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingTop: '0.5rem' }}>
         <div>
           <h1 style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
             Zero <span className="gradient-text">Tracker</span>
@@ -72,6 +80,9 @@ export default async function DashboardPage() {
           </button>
         </form>
       </div>
+
+      {/* Programme banner */}
+      <ProgramBanner activeProgram={activeProgram} programs={programs} />
 
       {/* Today card */}
       <div className="card animate-in" style={{ marginBottom: '1rem', position: 'relative', overflow: 'hidden' }}>
@@ -127,45 +138,81 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Stats 7 jours */}
+      {/* Stats de la phase */}
       <div className="card animate-in" style={{ marginBottom: '1rem', animationDelay: '0.05s' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ fontWeight: 700, fontSize: '0.95rem' }}>Moyennes 7 jours</h2>
-          {weightDelta !== null && (
+          <h2 style={{ fontWeight: 700, fontSize: '0.95rem' }}>
+            {activeProgram ? activeProgram.name : 'Ma progression'}
+          </h2>
+          {phaseDelta !== null && (
             <span
               className="badge"
               style={{
-                background: weightDelta < 0 ? 'rgba(74, 222, 128, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-                color: weightDelta < 0 ? 'var(--green)' : 'var(--red)',
+                background: phaseDelta < 0 ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)',
+                color: phaseDelta < 0 ? 'var(--green)' : 'var(--red)',
+                fontWeight: 800, fontSize: '0.85rem', padding: '4px 10px',
               }}
             >
-              {weightDelta < 0 ? <TrendingDown size={12} /> : weightDelta > 0 ? <TrendingUp size={12} /> : <Minus size={12} />}
-              {Math.abs(weightDelta)} kg
+              {phaseDelta < 0 ? <TrendingDown size={13} /> : <TrendingUp size={13} />}
+              {phaseDelta > 0 ? '+' : ''}{phaseDelta} kg
             </span>
           )}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-          <StatCard
-            icon={<Scale size={16} />}
-            label="Poids moy."
-            value={avgWeight ? avgWeight.toFixed(1) : '—'}
-            unit="kg"
-            color="var(--accent)"
-          />
-          <StatCard
-            icon={<Flame size={16} />}
-            label="Calories"
-            value={avgCal ? Math.round(avgCal).toString() : '—'}
-            unit="kcal"
-            color="#fb923c"
-          />
-          <StatCard
-            icon={<Footprints size={16} />}
-            label="Pas moy."
-            value={avgSteps ? formatNum(Math.round(avgSteps)) : '—'}
-            color="#818cf8"
-          />
-        </div>
+
+        {startWeight !== null || currentWeight !== null ? (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+            {/* Poids de départ */}
+            <div className="card-sm" style={{ textAlign: 'center' }}>
+              <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginBottom: '0.35rem', fontWeight: 500 }}>DÉPART</div>
+              <div style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1 }}>
+                {startWeight !== null ? startWeight : '—'}
+              </div>
+              <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '3px' }}>kg</div>
+            </div>
+
+            {/* Delta central — mis en valeur */}
+            <div style={{
+              textAlign: 'center', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              background: phaseDelta === null ? 'var(--bg-card2)'
+                : phaseDelta < 0 ? 'rgba(74,222,128,0.07)' : 'rgba(248,113,113,0.07)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.5rem',
+            }}>
+              <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginBottom: '0.35rem', fontWeight: 500 }}>VARIATION</div>
+              <div style={{
+                fontWeight: 900, fontSize: '1.4rem', letterSpacing: '-0.03em', lineHeight: 1,
+                color: phaseDelta === null ? 'var(--text-dimmed)'
+                  : phaseDelta < 0 ? 'var(--green)' : phaseDelta > 0 ? 'var(--red)' : 'var(--text)',
+              }}>
+                {phaseDelta !== null ? `${phaseDelta > 0 ? '+' : ''}${phaseDelta}` : '—'}
+              </div>
+              {phaseDelta !== null && <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '3px' }}>kg</div>}
+            </div>
+
+            {/* Poids actuel */}
+            <div className="card-sm" style={{ textAlign: 'center', borderColor: currentWeight !== null ? 'var(--accent)' : undefined }}>
+              <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginBottom: '0.35rem', fontWeight: 500 }}>ACTUEL</div>
+              <div style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1, color: currentWeight !== null ? 'var(--accent)' : 'var(--text)' }}>
+                {currentWeight !== null ? currentWeight : '—'}
+              </div>
+              <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '3px' }}>kg</div>
+            </div>
+          </div>
+        ) : (
+          <div style={{
+            padding: '1rem', textAlign: 'center', color: 'var(--text-dimmed)',
+            fontSize: '0.82rem', background: 'var(--bg-card2)', borderRadius: 'var(--radius-sm)',
+          }}>
+            ⚖️ Ajoute ton poids pour suivre ta progression
+          </div>
+        )}
+
+        {!activeProgram && (
+          <p style={{ color: 'var(--text-dimmed)', fontSize: '0.72rem', marginTop: '0.75rem', textAlign: 'center' }}>
+            Démarre un programme pour suivre ta progression par phase
+          </p>
+        )}
       </div>
 
       {/* Weight chart */}
@@ -194,7 +241,6 @@ export default async function DashboardPage() {
     </main>
   )
 }
-
 
 function StatCell({ icon, label, value, unit }: { icon: React.ReactNode; label: string; value: string; unit?: string }) {
   return (

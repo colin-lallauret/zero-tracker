@@ -10,6 +10,7 @@ export interface Entry {
   workout_type: WorkoutType | null
   photo_url: string | null
   notes: string | null
+  program_id: string | null
   created_at: string
   updated_at: string
 }

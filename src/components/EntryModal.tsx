@@ -2,7 +2,7 @@
 
 import { useState, useRef, useTransition, useEffect } from 'react'
 import { toast } from 'sonner'
-import { X, Scale, Flame, Footprints, Dumbbell, Camera, FileText, Loader2, Calendar, Trash2 } from 'lucide-react'
+import { X, Scale, Flame, Footprints, Dumbbell, Camera, FileText, Loader2, Calendar, Trash2, ImagePlus } from 'lucide-react'
 import { upsertEntry, deleteEntry } from '@/app/actions/entries'
 import type { Entry, WorkoutType } from '@/lib/types'
 
@@ -39,6 +39,7 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
   const [isPending, startTransition] = useTransition()
   const [isDeleting, startDeleteTransition] = useTransition()
   const fileRef = useRef<HTMLInputElement>(null)
+  const galleryRef = useRef<HTMLInputElement>(null)
 
   // Lock background scroll
   useEffect(() => {
@@ -223,7 +224,11 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
             <label className="label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Camera size={12} /> Photo (optionnel)
             </label>
+            {/* Input caméra (capture directe) */}
             <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handlePhoto} style={{ display: 'none' }} />
+            {/* Input galerie (sans capture) */}
+            <input ref={galleryRef} type="file" accept="image/*" onChange={handlePhoto} style={{ display: 'none' }} />
+
             {photoPreview ? (
               <div style={{ position: 'relative', borderRadius: 'var(--radius-sm)', overflow: 'hidden', aspectRatio: '16/9' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -241,27 +246,59 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                style={{
-                  width: '100%',
-                  border: '1.5px dashed var(--border)',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--bg-card2)',
-                  color: 'var(--text-muted)',
-                  padding: '1.25rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  fontSize: '0.875rem',
-                  transition: 'border-color 0.2s',
-                }}
-              >
-                <Camera size={16} /> Ajouter une photo
-              </button>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                {/* Bouton Caméra */}
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  style={{
+                    border: '1.5px dashed var(--border)',
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'var(--bg-card2)',
+                    color: 'var(--text-muted)',
+                    padding: '1rem 0.75rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    fontSize: '0.8rem',
+                    transition: 'border-color 0.2s, color 0.2s',
+                  }}
+                  onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)' }}
+                  onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)' }}
+                >
+                  <Camera size={20} />
+                  <span>Prendre une photo</span>
+                </button>
+
+                {/* Bouton Galerie */}
+                <button
+                  type="button"
+                  onClick={() => galleryRef.current?.click()}
+                  style={{
+                    border: '1.5px dashed var(--border)',
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'var(--bg-card2)',
+                    color: 'var(--text-muted)',
+                    padding: '1rem 0.75rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    fontSize: '0.8rem',
+                    transition: 'border-color 0.2s, color 0.2s',
+                  }}
+                  onMouseOver={e => { e.currentTarget.style.borderColor = '#818cf8'; e.currentTarget.style.color = '#818cf8' }}
+                  onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)' }}
+                >
+                  <ImagePlus size={20} />
+                  <span>Depuis la galerie</span>
+                </button>
+              </div>
             )}
           </div>
 
