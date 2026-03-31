@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect } from 'react'
 import { toast } from 'sonner'
-import { X, Plus, CheckCircle2, Circle, StopCircle, Trash2, Loader2, Zap, ChevronRight, Calendar } from 'lucide-react'
+import { X, Plus, CheckCircle2, Circle, StopCircle, Trash2, Loader2, Zap, Calendar } from 'lucide-react'
 import {
   createProgram,
   setActiveProgram,
@@ -38,7 +38,7 @@ function getDuration(start: string, end?: string | null) {
   return days <= 1 ? '1 jour' : `${days} jours`
 }
 
-export default function ProgramModal({ onClose, programs, activeProgram }: ProgramModalProps) {
+export default function ProgramModal({ onClose, programs }: ProgramModalProps) {
   const [view, setView] = useState<'list' | 'create'>('list')
   const [customName, setCustomName] = useState('')
   const [selectedPreset, setSelectedPreset] = useState('')

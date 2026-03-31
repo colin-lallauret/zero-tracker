@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { type EntryInsert, type EntryUpdate } from '@/lib/types'
+import { type EntryInsert } from '@/lib/types'
 
 export async function getEntries(limit = 30) {
   const supabase = await createClient()

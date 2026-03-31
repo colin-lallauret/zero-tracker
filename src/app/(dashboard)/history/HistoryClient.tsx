@@ -4,9 +4,9 @@ import { useState } from 'react'
 import EntryModal from '@/components/EntryModal'
 import Fab from '@/components/Fab'
 import ProgramModal from '@/components/ProgramModal'
-import type { Entry } from '@/lib/types'
 import type { Program } from '@/app/actions/programs'
-import { Scale, Flame, Footprints, Layers, ChevronRight } from 'lucide-react'
+import type { Entry } from '@/lib/types'
+import { Scale, Flame, Footprints, Layers } from 'lucide-react'
 
 const WORKOUT_BADGE_CLASS: Record<string, string> = {
   'Gym': 'badge-gym',

@@ -1,0 +1,26 @@
+﻿
+C:\Users\Colin-PC\Documents\Git\zero-tracker\src\app\(dashboard)\history\HistoryClient.tsx
+  9:44  warning  'ChevronRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Colin-PC\Documents\Git\zero-tracker\src\app\(dashboard)\page.tsx
+    8:62  warning  'Minus' is defined but never used                                @typescript-eslint/no-unused-vars
+   18:10  warning  'avg' is defined but never used                                  @typescript-eslint/no-unused-vars
+  100:22  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  129:39  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  257:10  warning  'StatCard' is defined but never used                             @typescript-eslint/no-unused-vars
+
+C:\Users\Colin-PC\Documents\Git\zero-tracker\src\app\actions\entries.ts
+  5:33  warning  'EntryUpdate' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Colin-PC\Documents\Git\zero-tracker\src\app\login\page.tsx
+  158:52  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\Colin-PC\Documents\Git\zero-tracker\src\components\ProgramModal.tsx
+   5:75  warning  'ChevronRight' is defined but never used   @typescript-eslint/no-unused-vars
+  41:59  warning  'activeProgram' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Colin-PC\Documents\Git\zero-tracker\src\components\WeightChart.tsx
+  10:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Ô£û 11 problems (4 errors, 7 warnings)
+

@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import WeightChart from '@/components/WeightChart'
 import Fab from '@/components/Fab'
 import ProgramBanner from '@/components/ProgramBanner'
-import { Scale, Flame, Footprints, TrendingDown, TrendingUp, Minus, LogOut } from 'lucide-react'
+import { Scale, Flame, Footprints, TrendingDown, TrendingUp, LogOut } from 'lucide-react'
 import type { Entry } from '@/lib/types'
 
 const WORKOUT_BADGE_CLASS: Record<string, string> = {
@@ -15,11 +15,7 @@ const WORKOUT_BADGE_CLASS: Record<string, string> = {
   'Gym + Cardio': 'badge-gymcardio',
 }
 
-function avg(entries: Entry[], key: keyof Entry): number | null {
-  const vals = entries.map(e => e[key]).filter(v => v !== null) as number[]
-  if (!vals.length) return null
-  return vals.reduce((a, b) => a + b, 0) / vals.length
-}
+
 
 function formatDate(dateStr: string) {
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('fr-FR', {
@@ -97,7 +93,7 @@ export default async function DashboardPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
           <div>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Aujourd'hui
+              Aujourd&apos;hui
             </p>
             <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '2px', textTransform: 'capitalize' }}>
               {formatDate(today)}
@@ -126,7 +122,7 @@ export default async function DashboardPage() {
             borderRadius: 'var(--radius-sm)',
           }}>
             <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.4rem' }}>📋</span>
-            Aucune entrée pour aujourd'hui — utilise le bouton <strong style={{ color: 'var(--accent)' }}>+</strong>
+            Aucune entrée pour aujourd&apos;hui — utilise le bouton <strong style={{ color: 'var(--accent)' }}>+</strong>
           </div>
         )}
 
@@ -254,16 +250,7 @@ function StatCell({ icon, label, value, unit }: { icon: React.ReactNode; label: 
   )
 }
 
-function StatCard({ icon, label, value, unit, color }: { icon: React.ReactNode; label: string; value: string; unit?: string; color?: string }) {
-  return (
-    <div className="card-sm" style={{ textAlign: 'center' }}>
-      <div style={{ color: color ?? 'var(--text-muted)', marginBottom: '0.4rem', display: 'flex', justifyContent: 'center' }}>{icon}</div>
-      <div style={{ fontWeight: 700, fontSize: '1.1rem', lineHeight: 1, letterSpacing: '-0.02em' }}>{value}</div>
-      {unit && <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '2px' }}>{unit}</div>}
-      <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '4px' }}>{label}</div>
-    </div>
-  )
-}
+
 
 function EntryRow({ entry }: { entry: Entry }) {
   const dateLabel = new Date(entry.date + 'T00:00:00').toLocaleDateString('fr-FR', {

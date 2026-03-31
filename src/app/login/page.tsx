@@ -155,7 +155,7 @@ export default function LoginPage() {
       </div>
 
       <p style={{ marginTop: '2rem', color: 'var(--text-dimmed)', fontSize: '0.8rem', textAlign: 'center' }}>
-        En continuant, tu acceptes les conditions d'utilisation
+        En continuant, tu acceptes les conditions d&apos;utilisation
       </p>
     </div>
   )
