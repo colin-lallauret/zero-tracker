@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import { Toaster } from 'sonner'
 import PwaRegister from '@/components/PwaRegister'
+import InstallPrompt from '@/components/InstallPrompt'
 import './globals.css'
 
 const geist = Geist({
@@ -16,6 +17,12 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'Zero Tracker',
+  },
+  formatDetection: {
+    telephone: false,
+    date: false,
+    email: false,
+    address: false,
   },
 }
 
@@ -37,6 +44,7 @@ export default function RootLayout({
     <html lang="fr" className={geist.variable}>
       <body>
         <PwaRegister />
+        <InstallPrompt />
         {children}
         <Toaster
           theme="dark"
