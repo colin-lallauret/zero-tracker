@@ -184,15 +184,18 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
                 <Scale size={12} /> Poids (kg)
               </label>
               <input
-                type="number"
-                step="0.1"
-                min="0"
-                max="999"
+                type="text"
                 placeholder="75.0"
                 value={weight}
-                onChange={e => setWeight(e.target.value)}
+                onChange={e => {
+                  const val = e.target.value.replace(',', '.')
+                  if (/^\d*\.?\d*$/.test(val)) {
+                    setWeight(val)
+                  }
+                }}
                 className="input"
                 inputMode="decimal"
+                pattern="[0-9]*[.,]?[0-9]*"
               />
             </div>
             <div>
@@ -200,14 +203,16 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
                 <Flame size={12} /> Calories
               </label>
               <input
-                type="number"
-                min="0"
-                max="9999"
+                type="text"
                 placeholder="2000"
                 value={calories}
-                onChange={e => setCalories(e.target.value)}
+                onChange={e => {
+                  const val = e.target.value
+                  if (/^\d*$/.test(val)) setCalories(val)
+                }}
                 className="input"
                 inputMode="numeric"
+                pattern="[0-9]*"
               />
             </div>
           </div>
@@ -218,14 +223,16 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
               <Footprints size={12} /> Pas
             </label>
             <input
-              type="number"
-              min="0"
-              max="99999"
+              type="text"
               placeholder="10000"
               value={steps}
-              onChange={e => setSteps(e.target.value)}
+              onChange={e => {
+                const val = e.target.value
+                if (/^\d*$/.test(val)) setSteps(val)
+              }}
               className="input"
               inputMode="numeric"
+              pattern="[0-9]*"
             />
           </div>
 
