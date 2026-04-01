@@ -33,8 +33,6 @@
 }
 
 html, body {
-  min-height: 100dvh;
-  overflow-x: hidden;
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
