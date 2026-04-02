@@ -27,6 +27,11 @@ function formatNum(n: number) {
   return n.toLocaleString('fr-FR')
 }
 
+function formatWeight(w: number | string | null | undefined) {
+  if (w === null || w === undefined) return null;
+  return Number(w).toFixed(2);
+}
+
 interface HistoryClientProps {
   entries: Entry[]
   programs: Program[]
@@ -107,7 +112,7 @@ export default function HistoryClient({ entries, programs, activeProgram }: Hist
         const weights = filteredEntries.filter(e => e.weight).map(e => parseFloat(String(e.weight)))
         const firstWeight = weights[weights.length - 1]
         const lastWeight = weights[0]
-        const delta = firstWeight && lastWeight ? parseFloat((lastWeight - firstWeight).toFixed(1)) : null
+        const delta = firstWeight && lastWeight ? parseFloat((lastWeight - firstWeight).toFixed(2)) : null
         return (
           <div className="card-sm" style={{ marginBottom: '1rem', background: 'rgba(34,211,238,0.04)', borderColor: 'rgba(34,211,238,0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
@@ -122,12 +127,12 @@ export default function HistoryClient({ entries, programs, activeProgram }: Hist
                   </span>
                   {firstWeight && (
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      ⚖️ Départ : <strong style={{ color: 'var(--text)' }}>{firstWeight} kg</strong>
+                      ⚖️ Départ : <strong style={{ color: 'var(--text)' }}>{formatWeight(firstWeight)} kg</strong>
                     </span>
                   )}
                   {lastWeight && firstWeight !== lastWeight && (
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      🎯 Actuel : <strong style={{ color: 'var(--text)' }}>{lastWeight} kg</strong>
+                      🎯 Actuel : <strong style={{ color: 'var(--text)' }}>{formatWeight(lastWeight)} kg</strong>
                     </span>
                   )}
                   {delta !== null && (
@@ -135,7 +140,7 @@ export default function HistoryClient({ entries, programs, activeProgram }: Hist
                       fontSize: '0.78rem', fontWeight: 700,
                       color: delta < 0 ? 'var(--green)' : delta > 0 ? 'var(--red)' : 'var(--text-muted)',
                     }}>
-                      {delta > 0 ? '+' : ''}{delta} kg au total
+                      {delta > 0 ? '+' : ''}{formatWeight(delta)} kg au total
                     </span>
                   )}
                 </div>
@@ -205,7 +210,7 @@ export default function HistoryClient({ entries, programs, activeProgram }: Hist
                     <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-muted)', textAlign: 'center', fontSize: '0.8rem', fontWeight: 600 }}>
                       {phaseDay !== null ? `J${phaseDay}` : '-'}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', color: 'var(--accent)', fontWeight: 600 }}>{entry.weight ?? '-'}</td>
+                    <td style={{ padding: '0.75rem 1rem', color: 'var(--accent)', fontWeight: 600 }}>{formatWeight(entry.weight) ?? '-'}</td>
                     <td style={{ padding: '0.75rem 1rem', color: '#fb923c' }}>{entry.calories ?? '-'}</td>
                     <td style={{ padding: '0.75rem 1rem', color: '#818cf8' }}>{entry.steps ? formatNum(entry.steps) : '-'}</td>
                     <td style={{ padding: '0.75rem 1rem' }}>

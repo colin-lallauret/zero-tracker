@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { X, Scale, Flame, Footprints, Dumbbell, Camera, FileText, Loader2, Calendar, Trash2, ImagePlus } from 'lucide-react'
 import { upsertEntry, deleteEntry, uploadPhoto } from '@/app/actions/entries'
 import type { Entry, WorkoutType } from '@/lib/types'
+import BlurredImage from '@/components/BlurredImage'
 
 const WORKOUT_OPTIONS: { value: WorkoutType; label: string; emoji: string }[] = [
   { value: 'Gym', label: 'Gym', emoji: '🏋️' },
@@ -280,15 +281,15 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
 
             {photoPreview ? (
               <div style={{ position: 'relative', borderRadius: 'var(--radius-sm)', overflow: 'hidden', aspectRatio: '3/4', backgroundColor: 'var(--bg-card)' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <BlurredImage src={photoPreview} alt="Preview" />
                 <button
                   type="button"
-                  onClick={() => { setPhotoPreview(null); setPhotoFile(null) }}
+                  onClick={(e) => { e.stopPropagation(); setPhotoPreview(null); setPhotoFile(null) }}
                   style={{
                     position: 'absolute', top: '0.5rem', right: '0.5rem',
                     background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%',
                     padding: '0.3rem', cursor: 'pointer', color: '#fff', display: 'flex',
+                    zIndex: 20,
                   }}
                 >
                   <X size={14} />

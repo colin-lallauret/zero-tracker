@@ -8,6 +8,11 @@ interface PhotoGalleryModalProps {
   onClose: () => void
 }
 
+function formatWeight(w: number | string | null | undefined) {
+  if (w === null || w === undefined) return null;
+  return Number(w).toFixed(2);
+}
+
 export default function PhotoGalleryModal({ entries, onClose }: PhotoGalleryModalProps) {
   // On récupère uniquement celles qui ont une photo, et on les trie de la plus ancienne à la plus récente
   const photoEntries = [...entries]
@@ -57,7 +62,7 @@ export default function PhotoGalleryModal({ entries, onClose }: PhotoGalleryModa
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={oldest.photo_url!} alt="Avant" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', bottom: '0.5rem', left: '0.5rem', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, color: '#fff', backdropFilter: 'blur(4px)' }}>
-                  {oldest.weight ? `${oldest.weight} kg` : 'Départ'}
+                  {oldest.weight ? `${formatWeight(oldest.weight)} kg` : 'Départ'}
                 </div>
               </div>
               <p style={{ textAlign: 'center', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avant</p>
@@ -73,7 +78,7 @@ export default function PhotoGalleryModal({ entries, onClose }: PhotoGalleryModa
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={newest.photo_url!} alt="Après" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', bottom: '0.5rem', right: '0.5rem', background: 'var(--accent)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, color: '#000' }}>
-                  {newest.weight ? `${newest.weight} kg` : "Aujourd'hui"}
+                  {newest.weight ? `${formatWeight(newest.weight)} kg` : "Aujourd'hui"}
                 </div>
               </div>
               <p style={{ textAlign: 'center', fontSize: '0.85rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Après</p>

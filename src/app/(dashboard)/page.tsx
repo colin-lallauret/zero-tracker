@@ -24,6 +24,11 @@ function formatDate(dateStr: string) {
   })
 }
 
+function formatWeight(w: number | string | null | undefined) {
+  if (w === null || w === undefined) return null;
+  return Number(w).toFixed(2);
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -48,7 +53,7 @@ export default async function DashboardPage() {
     ? programWeights[0].weight! // la plus récente
     : (todayEntry?.weight ?? null)
   const phaseDelta = startWeight !== null && currentWeight !== null && startWeight !== currentWeight
-    ? parseFloat((currentWeight - startWeight).toFixed(1))
+    ? parseFloat((currentWeight - startWeight).toFixed(2))
     : null
 
   const today = new Date().toISOString().split('T')[0]
@@ -114,7 +119,7 @@ export default async function DashboardPage() {
 
         {isToday && todayEntry ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-            <StatCell icon={<Scale size={14} />} label="Poids" value={todayEntry.weight ? `${todayEntry.weight}` : '—'} unit="kg" />
+            <StatCell icon={<Scale size={14} />} label="Poids" value={todayEntry.weight ? `${formatWeight(todayEntry.weight)}` : '—'} unit="kg" />
             <StatCell icon={<Flame size={14} />} label="Calories" value={todayEntry.calories ? `${todayEntry.calories}` : '—'} unit="kcal" />
             <StatCell icon={<Footprints size={14} />} label="Pas" value={todayEntry.steps ? formatNum(todayEntry.steps) : '—'} />
           </div>
@@ -162,7 +167,7 @@ export default async function DashboardPage() {
               }}
             >
               {phaseDelta < 0 ? <TrendingDown size={13} /> : <TrendingUp size={13} />}
-              {phaseDelta > 0 ? '+' : ''}{phaseDelta} kg
+              {phaseDelta > 0 ? '+' : ''}{formatWeight(phaseDelta)} kg
             </span>
           )}
         </div>
@@ -173,7 +178,7 @@ export default async function DashboardPage() {
             <div className="card-sm" style={{ textAlign: 'center' }}>
               <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginBottom: '0.35rem', fontWeight: 500 }}>DÉPART</div>
               <div style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1 }}>
-                {startWeight !== null ? startWeight : '—'}
+                {startWeight !== null ? formatWeight(startWeight) : '—'}
               </div>
               <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '3px' }}>kg</div>
             </div>
@@ -193,7 +198,7 @@ export default async function DashboardPage() {
                 color: phaseDelta === null ? 'var(--text-dimmed)'
                   : phaseDelta < 0 ? 'var(--green)' : phaseDelta > 0 ? 'var(--red)' : 'var(--text)',
               }}>
-                {phaseDelta !== null ? `${phaseDelta > 0 ? '+' : ''}${phaseDelta}` : '—'}
+                {phaseDelta !== null ? `${phaseDelta > 0 ? '+' : ''}${formatWeight(phaseDelta)}` : '—'}
               </div>
               {phaseDelta !== null && <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '3px' }}>kg</div>}
             </div>
@@ -202,7 +207,7 @@ export default async function DashboardPage() {
             <div className="card-sm" style={{ textAlign: 'center', borderColor: currentWeight !== null ? 'var(--accent)' : undefined }}>
               <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginBottom: '0.35rem', fontWeight: 500 }}>ACTUEL</div>
               <div style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1, color: currentWeight !== null ? 'var(--accent)' : 'var(--text)' }}>
-                {currentWeight !== null ? currentWeight : '—'}
+                {currentWeight !== null ? formatWeight(currentWeight) : '—'}
               </div>
               <div style={{ color: 'var(--text-dimmed)', fontSize: '0.65rem', marginTop: '3px' }}>kg</div>
             </div>
@@ -274,7 +279,7 @@ function EntryRow({ entry }: { entry: Entry }) {
         <p style={{ fontWeight: 600, fontSize: '0.85rem', textTransform: 'capitalize' }}>{dateLabel}</p>
         <p style={{ color: 'var(--text-dimmed)', fontSize: '0.75rem', marginTop: '2px' }}>
           {[
-            entry.weight ? `${entry.weight} kg` : null,
+            entry.weight ? `${formatWeight(entry.weight)} kg` : null,
             entry.calories ? `${entry.calories} kcal` : null,
             entry.steps ? `${formatNum(entry.steps)} pas` : null,
           ].filter(Boolean).join(' · ')}
