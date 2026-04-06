@@ -2,6 +2,7 @@
 
 import { X, ArrowRight } from 'lucide-react'
 import type { Entry } from '@/lib/types'
+import PhotoWithBlur from '@/components/PhotoWithBlur'
 
 interface PhotoGalleryModalProps {
   entries: Entry[]
@@ -59,9 +60,8 @@ export default function PhotoGalleryModal({ entries, onClose }: PhotoGalleryModa
             {/* AVANT */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ background: 'var(--bg-card)', borderRadius: '12px', overflow: 'hidden', aspectRatio: '3/4', position: 'relative', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={oldest.photo_url!} alt="Avant" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', bottom: '0.5rem', left: '0.5rem', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, color: '#fff', backdropFilter: 'blur(4px)' }}>
+                <PhotoWithBlur src={oldest.photo_url!} alt="Avant" fullBlur={false} />
+                <div style={{ position: 'absolute', bottom: '0.5rem', left: '0.5rem', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, color: '#fff', backdropFilter: 'blur(4px)', zIndex: 30 }}>
                   {oldest.weight ? `${formatWeight(oldest.weight)} kg` : 'Départ'}
                 </div>
               </div>
@@ -75,9 +75,8 @@ export default function PhotoGalleryModal({ entries, onClose }: PhotoGalleryModa
             {/* APRÈS */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ background: 'var(--bg-card)', borderRadius: '12px', overflow: 'hidden', aspectRatio: '3/4', position: 'relative', boxShadow: '0 0 0 2px var(--accent), 0 4px 20px rgba(34,211,238,0.3)' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={newest.photo_url!} alt="Après" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', bottom: '0.5rem', right: '0.5rem', background: 'var(--accent)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, color: '#000' }}>
+                <PhotoWithBlur src={newest.photo_url!} alt="Après" fullBlur={false} />
+                <div style={{ position: 'absolute', bottom: '0.5rem', right: '0.5rem', background: 'var(--accent)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, color: '#000', zIndex: 30 }}>
                   {newest.weight ? `${formatWeight(newest.weight)} kg` : "Aujourd'hui"}
                 </div>
               </div>
@@ -87,8 +86,7 @@ export default function PhotoGalleryModal({ entries, onClose }: PhotoGalleryModa
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             <div style={{ width: '80%', background: 'var(--bg-card)', borderRadius: '12px', overflow: 'hidden', aspectRatio: '3/4', position: 'relative', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={oldest.photo_url!} alt="Première photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <PhotoWithBlur src={oldest.photo_url!} alt="Première photo" fullBlur={false} />
             </div>
             <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Ajoute d&apos;autres photos pour débloquer la vue Avant/Après !</p>
           </div>
@@ -101,9 +99,8 @@ export default function PhotoGalleryModal({ entries, onClose }: PhotoGalleryModa
           <div style={{ display: 'flex', overflowX: 'auto', gap: '0.75rem', paddingBottom: '1rem', scrollSnapType: 'x mandatory', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
             {[...photoEntries].reverse().map(e => (
               <div key={e.id} style={{ flex: '0 0 90px', scrollSnapAlign: 'start', position: 'relative', borderRadius: '10px', overflow: 'hidden', aspectRatio: '3/4', backgroundColor: 'var(--bg-card)' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={e.photo_url!} alt="Timeline" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '12px 4px 4px', fontSize: '0.7rem', color: '#fff', fontWeight: 700, textAlign: 'center' }}>
+                <PhotoWithBlur src={e.photo_url!} alt="Timeline" fullBlur={false} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '12px 4px 4px', fontSize: '0.7rem', color: '#fff', fontWeight: 700, textAlign: 'center', zIndex: 30 }}>
                   {new Date(e.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
                 </div>
               </div>

@@ -1,12 +1,12 @@
 import { getEntries, getTodayEntry } from '@/app/actions/entries'
-import { logout } from '@/app/actions/auth'
 import { getPrograms, getActiveProgram } from '@/app/actions/programs'
 import { createClient } from '@/lib/supabase/server'
 import WeightChart from '@/components/WeightChart'
 import Fab from '@/components/Fab'
 import ProgramBanner from '@/components/ProgramBanner'
-import BlurredImage from '@/components/BlurredImage'
-import { Scale, Flame, Footprints, TrendingDown, TrendingUp, LogOut, Zap } from 'lucide-react'
+import DashboardHeader from '@/components/DashboardHeader'
+import PhotoWithBlur from '@/components/PhotoWithBlur'
+import { Scale, Flame, Footprints, TrendingDown, TrendingUp, Zap } from 'lucide-react'
 import type { Entry } from '@/lib/types'
 
 const WORKOUT_BADGE_CLASS: Record<string, string> = {
@@ -67,26 +67,7 @@ export default async function DashboardPage() {
   return (
     <main className="page-container">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingTop: '0.5rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
-            Zero <span className="gradient-text">Tracker</span>
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '2px' }}>
-            {user?.email}
-          </p>
-        </div>
-        <form action={logout}>
-          <button
-            type="submit"
-            className="btn btn-ghost"
-            style={{ padding: '0.5rem 0.75rem', fontSize: '0.8rem', borderRadius: '10px' }}
-            title="Se déconnecter"
-          >
-            <LogOut size={15} />
-          </button>
-        </form>
-      </div>
+      <DashboardHeader email={user?.email} />
 
       {/* Programme banner */}
       <ProgramBanner activeProgram={activeProgram} programs={programs} />
@@ -139,7 +120,7 @@ export default async function DashboardPage() {
 
         {todayEntry?.photo_url && (
           <div style={{ marginTop: '0.75rem', borderRadius: 'var(--radius-sm)', overflow: 'hidden', aspectRatio: '3/4', backgroundColor: 'var(--bg-card)' }}>
-            <BlurredImage src={todayEntry.photo_url} alt="Photo du jour" />
+            <PhotoWithBlur src={todayEntry.photo_url} alt="Photo du jour" />
           </div>
         )}
       </div>

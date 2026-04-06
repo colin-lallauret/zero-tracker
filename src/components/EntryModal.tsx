@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { X, Scale, Flame, Footprints, Dumbbell, Camera, FileText, Loader2, Calendar, Trash2, ImagePlus } from 'lucide-react'
 import { upsertEntry, deleteEntry, uploadPhoto } from '@/app/actions/entries'
 import type { Entry, WorkoutType } from '@/lib/types'
-import BlurredImage from '@/components/BlurredImage'
+import PhotoWithBlur from '@/components/PhotoWithBlur'
 
 const WORKOUT_OPTIONS: { value: WorkoutType; label: string; emoji: string }[] = [
   { value: 'Gym', label: 'Gym', emoji: '🏋️' },
@@ -281,7 +281,7 @@ export default function EntryModal({ onClose, existing, defaultDate }: EntryModa
 
             {photoPreview ? (
               <div style={{ position: 'relative', borderRadius: 'var(--radius-sm)', overflow: 'hidden', aspectRatio: '3/4', backgroundColor: 'var(--bg-card)' }}>
-                <BlurredImage src={photoPreview} alt="Preview" />
+                <PhotoWithBlur src={photoPreview} alt="Preview" />
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); setPhotoPreview(null); setPhotoFile(null) }}
